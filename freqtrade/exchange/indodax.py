@@ -1,12 +1,20 @@
 from freqtrade.exchange import Exchange
 
 
+import ccxt
+
 class Indodax(Exchange):
     """
     Custom implementation for the Indodax exchange.
     """
 
-    def __init__(self, config: dict) -> None:
+    def __init__(self, *args, validate=False, **kwargs):
+        self.validate = validate
+        self.exchange = ccxt.indodax({
+            'apiKey': kwargs.get('api_key'),
+            'secret': kwargs.get('api_secret'),
+        })
+
         super().__init__(config)
         self._timeframes = {
             "1m": "1m",
@@ -31,6 +39,12 @@ class Indodax(Exchange):
         """
         return self._timeframes
 
+    def fetch_ticker(self, symbol):
+        try:
+            return self.exchange.fetch_ticker(symbol)
+        except Exception as e:
+            raise RuntimeError(f"Failed to fetch ticker for {symbol}: {e}")
+
     def fetch_tickers(self, pairs=None):
         """
         Fetch all tickers from the exchange.
@@ -51,3 +65,7 @@ class Indodax(Exchange):
         if timeframe not in self.timeframes:
             raise ValueError(f"Timeframe {timeframe} is not supported.")
         return super().fetch_ohlcv(pair, timeframe, since, limit)
+
+    def close(self):
+        # Clean up resources if necessary
+        pass
