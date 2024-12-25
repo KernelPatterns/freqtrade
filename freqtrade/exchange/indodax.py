@@ -16,8 +16,7 @@ class Indodax(Exchange):
                 "secret": kwargs.get("api_secret"),
             }
         )
- 
-        super().__init__(config)
+
         self._timeframes = {
             "1m": "1m",
             "15m": "15m",
