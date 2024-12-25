@@ -27,8 +27,8 @@ class Indodax(Exchange):
         }
         self._ccxt_has = {
             "fetchOHLCV": True,
-            "fetchTickers": True,
             "fetchTicker": True,
+            "fetchTickers": True,
             "fetchTrades": True,
             "fetchBalance": True,
         }
@@ -52,7 +52,10 @@ class Indodax(Exchange):
         :param pairs: Optional list of pairs to fetch tickers for.
         :return: Tickers as a dictionary.
         """
-        return super().fetch_tickers(pairs)
+        try:
+            return self.exchange.fetch_tickers(pairs)
+        except Exception as e:
+            raise RuntimeError(f"Failed to fetch ticker for {pairs}: {e}")
 
     def fetch_ohlcv(self, pair, timeframe, since=None, limit=None):
         """
@@ -65,7 +68,7 @@ class Indodax(Exchange):
         """
         if timeframe not in self.timeframes:
             raise ValueError(f"Timeframe {timeframe} is not supported.")
-        return super().fetch_ohlcv(pair, timeframe, since, limit)
+        return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
     def close(self):
         # Clean up resources if necessary
