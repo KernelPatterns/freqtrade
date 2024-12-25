@@ -26,7 +26,7 @@ jobs:
         python3 -m venv venv
         source venv/bin/activate
         pip install --upgrade pip build setuptools wheel
-        echo "EVENT_RELEASE=${{ github.event.release.tag_name }}" >> ${GITHUB_ENV}
+        echo "tag_name=${{ github.event.release.tag_name }}" >> ${GITHUB_ENV}
 
     - name: Build Wheel
       run: |
@@ -41,10 +41,12 @@ jobs:
         if [ -z "$WHEEL_PATH" ]; then
           echo "Wheel file not found in dist/ directory."
           exit 1
+        else
+          WHEEL_FILE=freqtrade-${{ env.tag_name }}-py3-none-any.whl        
+          mv -f $WHEEL_PATH dist/$WHEEL_FILE
         fi
 
         # Use basename to extract
-        WHEEL_FILE=$(basename "$WHEEL_PATH")
         echo "Resolved wheel file: $WHEEL_FILE"
         echo 'wheel='$WHEEL_FILE >> ${GITHUB_ENV}
 
