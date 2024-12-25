@@ -42,7 +42,7 @@ jobs:
           echo "Wheel file not found in dist/ directory."
           exit 1
         else
-          WHEEL_FILE=freqtrade-${{ env.tag_name }}-py3-none-any.whl        
+          WHEEL_FILE=freqtrade-${{ env.tag_name }}-py3-none-any.whl
           mv -f $WHEEL_PATH dist/$WHEEL_FILE
         fi
 
