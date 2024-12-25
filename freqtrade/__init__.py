@@ -1,6 +1,9 @@
 """Freqtrade bot"""
 
-__version__ = "2024.12-dev"
+import os
+
+
+__version__ = os.getenv("EVENT_RELEASE", "2024.12-dev")  # Fallback to default version
 
 if "dev" in __version__:
     from pathlib import Path
