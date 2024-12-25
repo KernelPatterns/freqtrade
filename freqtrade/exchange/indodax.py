@@ -1,7 +1,7 @@
+import ccxt
+
 from freqtrade.exchange import Exchange
 
-
-import ccxt
 
 class Indodax(Exchange):
     """
@@ -10,19 +10,21 @@ class Indodax(Exchange):
 
     def __init__(self, *args, validate=False, **kwargs):
         self.validate = validate
-        self.exchange = ccxt.indodax({
-            'apiKey': kwargs.get('api_key'),
-            'secret': kwargs.get('api_secret'),
-        })
-
+        self.exchange = ccxt.indodax(
+            {
+                "apiKey": kwargs.get("api_key"),
+                "secret": kwargs.get("api_secret"),
+            }
+        )
+ 
         super().__init__(config)
         self._timeframes = {
-            "1m": "1m",
-            "15m": "15m",
-            "30m": "30m",
-            "1h": "1h",
-            "4h": "4h",
-            "1d": "1d",
+           "1m": "1m",
+           "15m": "15m",
+           "30m": "30m",
+           "1h": "1h",
+           "4h": "4h",
+           "1d": "1d",
         }
         self._ccxt_has = {
             "fetchOHLCV": True,
