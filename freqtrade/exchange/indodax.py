@@ -89,8 +89,9 @@ class Indodax(Exchange):
         return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
 
-    def ohlcv_candle_limit(self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
-                          ) -> int:
+    def ohlcv_candle_limit(
+        self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
+    ) -> int:
         """
         Returns the maximum number of candles that the exchange supports for the given timeframe.
 
