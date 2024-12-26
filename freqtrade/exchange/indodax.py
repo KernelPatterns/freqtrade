@@ -97,11 +97,11 @@ class Indodax(Exchange):
         # Define candle limits based on Indodax's capabilities
         candle_limits = {
             "1m": 1440,  # Example: 1440 1-minute candles (24 hours)
-            "15m": 96,   # Example: 96 15-minute candles (24 hours)
-            "30m": 48,   # Example: 48 30-minute candles (24 hours)
-            "1h": 24,    # Example: 24 hourly candles (24 hours)
-            "4h": 7,     # Example: 7 4-hour candles (28 hours)
-            "1d": 365,   # Example: 365 daily candles (1 year)
+            "15m": 96,  # Example: 96 15-minute candles (24 hours)
+            "30m": 48,  # Example: 48 30-minute candles (24 hours)
+            "1h": 24,  # Example: 24 hourly candles (24 hours)
+            "4h": 7,  # Example: 7 4-hour candles (28 hours)
+            "1d": 365,  # Example: 365 daily candles (1 year)
         }
 
         return candle_limits.get(timeframe, 100)  # Default to 100 if timeframe is not in the dict
