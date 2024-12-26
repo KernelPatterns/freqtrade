@@ -1,4 +1,11 @@
+"""Indodax exchange subclass"""
+
+import logging
+from datetime import datetime
+from typing import Any
+
 import ccxt
+from pandas import DataFrame
 
 from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
