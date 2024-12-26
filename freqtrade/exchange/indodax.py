@@ -88,7 +88,6 @@ class Indodax(Exchange):
             raise ValueError(f"Timeframe {timeframe} is not supported.")
         return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
-
     def ohlcv_candle_limit(
         self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
     ) -> int:
