@@ -6,6 +6,7 @@ import ccxt
 
 from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
+from freqtrade.exchange.common_types import CandleType
 
 
 logger = logging.getLogger(__name__)
@@ -87,11 +88,14 @@ class Indodax(Exchange):
             raise ValueError(f"Timeframe {timeframe} is not supported.")
         return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
-    def ohlcv_candle_limit(self, timeframe: str) -> int:
+
+    def ohlcv_candle_limit(self, timeframe: str, candle_type: CandleType, since_ms: int | None = None) -> int:
         """
         Returns the maximum number of candles that the exchange supports for the given timeframe.
 
         :param timeframe: Timeframe in the format '1m', '5m', '1d', etc.
+        :param candle_type: The type of candle (specific to freqtrade configuration).
+        :param since_ms: Timestamp in milliseconds (optional).
         :return: Integer indicating the maximum number of candles.
         """
         # Define candle limits based on Indodax's capabilities
