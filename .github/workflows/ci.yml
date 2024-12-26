@@ -557,7 +557,8 @@ jobs:
     name: "Publish Python 🐍 distribution 📦 to PyPI"
     needs: [ build ]
     runs-on: ubuntu-22.04
-    if: (github.event_name == 'release' && env.PYPI_TOKEN != '')
+    #if: (github.event_name == 'release' && env.PYPI_TOKEN != '')
+    if: ${{ secrets.PYPI_TOKEN != '' }}
     environment:
       name: pypi
       url: https://pypi.org/p/freqtrade
