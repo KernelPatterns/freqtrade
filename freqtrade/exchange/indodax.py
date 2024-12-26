@@ -1,12 +1,12 @@
 """Indodax exchange subclass"""
 
 import logging
+
 import ccxt
 
 from freqtrade.enums import CandleType
 from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
-
 
 logger = logging.getLogger(__name__)
 
@@ -55,15 +55,14 @@ class Indodax(Exchange):
 
     @property
     def timeframes(self):
-        """
-        Returns the available timeframes for this exchange.
-        """
+        """Returns the available timeframes for this exchange."""
         return self._timeframes
 
     @property
     def markets(self):
         """
-        Returns the markets available on the exchange. Fetches and caches markets if not already cached.
+        Returns the markets available on the exchange.
+        Fetches and caches markets if not already cached.
         """
         if not self._markets:
             try:
@@ -113,7 +112,6 @@ class Indodax(Exchange):
         :param since_ms: Timestamp in milliseconds (optional).
         :return: Integer indicating the maximum number of candles.
         """
-        # Define candle limits based on Indodax's capabilities
         candle_limits = {
             "1m": 1440,  # Example: 1440 1-minute candles (24 hours)
             "15m": 96,  # Example: 96 15-minute candles (24 hours)
@@ -126,5 +124,5 @@ class Indodax(Exchange):
         return candle_limits.get(timeframe, 100)  # Default to 100 if timeframe is not in the dict
 
     def close(self):
-        # Clean up resources if necessary
+        """Clean up resources if necessary."""
         pass
