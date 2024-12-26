@@ -6,8 +6,17 @@ from freqtrade.exchange.exchange_types import FtHas
 
 class Indodax(Exchange):
     """
-    Custom implementation for the Indodax exchange.
+    Indodax exchange class. Contains adjustments needed for Freqtrade to work
+    with this exchange.
+
+    Please note that this exchange is not included in the list of exchanges
+    officially supported by the Freqtrade development team. So some features
+    may still not work as expected.
     """
+
+    _ft_has: FtHas = {
+        "ohlcv_candle_limit": 100,
+    }
 
     def __init__(self, *args, validate=False, **kwargs):
         self.validate = validate
