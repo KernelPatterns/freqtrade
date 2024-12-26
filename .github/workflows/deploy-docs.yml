@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - develop
-  release:
-    types: [published]
 
 
 # disable permissions for all of the available permissions
