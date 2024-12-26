@@ -1,7 +1,6 @@
 """Indodax exchange subclass"""
 
 import logging
-
 import ccxt
 
 from freqtrade.enums import CandleType
@@ -27,6 +26,8 @@ class Indodax(Exchange):
     }
 
     def __init__(self, *args, validate=False, **kwargs):
+        super().__init__(*args, validate=validate, **kwargs)
+
         self.validate = validate
         self.exchange = ccxt.indodax(
             {
@@ -35,6 +36,7 @@ class Indodax(Exchange):
             }
         )
 
+        self._markets = None  # Initialize _markets as None
         self._timeframes = {
             "1m": "1m",
             "15m": "15m",
@@ -57,6 +59,18 @@ class Indodax(Exchange):
         Returns the available timeframes for this exchange.
         """
         return self._timeframes
+
+    @property
+    def markets(self):
+        """
+        Returns the markets available on the exchange. Fetches and caches markets if not already cached.
+        """
+        if not self._markets:
+            try:
+                self._markets = self.exchange.load_markets()
+            except Exception as e:
+                raise RuntimeError(f"Failed to load markets: {e}")
+        return self._markets
 
     def fetch_ticker(self, symbol):
         try:
