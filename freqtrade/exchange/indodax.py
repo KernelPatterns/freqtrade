@@ -5,8 +5,8 @@ import logging
 import ccxt
 
 from freqtrade.exchange import Exchange
-from freqtrade.exchange.exchange_types import FtHas
 from freqtrade.exchange.common_types import CandleType
+from freqtrade.exchange.exchange_types import FtHas
 
 
 logger = logging.getLogger(__name__)
@@ -89,7 +89,8 @@ class Indodax(Exchange):
         return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
 
-    def ohlcv_candle_limit(self, timeframe: str, candle_type: CandleType, since_ms: int | None = None) -> int:
+    def ohlcv_candle_limit(self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
+                          ) -> int:
         """
         Returns the maximum number of candles that the exchange supports for the given timeframe.
 
