@@ -70,6 +70,26 @@ class Indodax(Exchange):
             raise ValueError(f"Timeframe {timeframe} is not supported.")
         return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
+    def ohlcv_candle_limit(self, timeframe: str) -> int:
+        """
+        Returns the maximum number of candles that the exchange supports for the given timeframe.
+
+        :param timeframe: Timeframe in the format '1m', '1d', etc.
+        :return: Integer indicating the maximum number of candles.
+        """
+        # Define candle limits based on Indodax capabilities (example values)
+        candle_limits = {
+            "1m": 1000,
+            "15m": 1000,
+            "30m": 1000,
+            "1h": 1000,
+            "4h": 1000,
+            "1d": 365,
+        }
+
+        # Return the candle limit for the given timeframe or a default value
+        return candle_limits.get(timeframe, 1000)  # Default to 1000 if timeframe is not in the dict
+    
     def close(self):
         # Clean up resources if necessary
         pass
