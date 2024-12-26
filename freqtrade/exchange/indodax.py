@@ -4,8 +4,8 @@ import logging
 
 import ccxt
 
-from freqtrade.exchange import Exchange
 from freqtrade.enums import CandleType
+from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
 
 
