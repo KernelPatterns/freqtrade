@@ -558,7 +558,7 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-22.04
     #if: (github.event_name == 'release')
-    if: github.event_name == 'release' && secrets.PYPI_TOKEN != ''
+    if: $(github.event_name == 'release' && secrets.PYPI_TOKEN != '')
     environment:
       name: pypi
       url: https://pypi.org/p/freqtrade
