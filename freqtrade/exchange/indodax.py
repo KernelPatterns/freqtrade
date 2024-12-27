@@ -1,13 +1,15 @@
 """Indodax exchange subclass"""
 
 import logging
+
 import ccxt
 
 from freqtrade.enums import CandleType
-from freqtrade.exchange import Exchange, FtHas
-from freqtrade.exchange.exchange import TradingMode
+from freqtrade.exchange import Exchange
+from freqtrade.exchange.exchange_types import FtHas
 
-logger = logging.getLogger(__name__)  # Initialize logger
+
+logger = logging.getLogger(__name__)
 
 
 class Indodax(Exchange):
@@ -26,14 +28,13 @@ class Indodax(Exchange):
 
     def __init__(self, *args, validate=False, **kwargs):
         self.validate = validate
-        self.trading_mode = TradingMode.SPOT  # Set trading mode to SPOT
         self._api = ccxt.indodax(
             {
                 "apiKey": kwargs.get("api_key"),
                 "secret": kwargs.get("api_secret"),
             }
         )
-        self._markets = None  # Initialize the _markets attribute
+        self._markets = None
         self._timeframes = {
             "1m": "1m",
             "15m": "15m",
@@ -92,7 +93,6 @@ class Indodax(Exchange):
         """
         return self._timeframes
 
-    # Original methods
     def fetch_ticker(self, symbol):
         """
         Fetch ticker data for a single trading pair.
