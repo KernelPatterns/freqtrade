@@ -8,6 +8,7 @@ from freqtrade.enums import CandleType
 from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
 
+
 logger = logging.getLogger(__name__)
 
 
