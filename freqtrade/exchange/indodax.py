@@ -1,12 +1,13 @@
 """Indodax exchange subclass"""
 
 import logging
-
 import ccxt
 
 from freqtrade.enums import CandleType
-from freqtrade.exchange import Exchange
+from freqtrade.exchange import Exchange, FtHas
 from freqtrade.exchange.exchange import TradingMode
+
+logger = logging.getLogger(__name__)  # Initialize logger
 
 
 class Indodax(Exchange):
@@ -91,9 +92,15 @@ class Indodax(Exchange):
         """
         return self._timeframes
 
+    # Original methods
     def fetch_ticker(self, symbol):
+        """
+        Fetch ticker data for a single trading pair.
+        :param symbol: The trading pair symbol.
+        :return: Ticker data.
+        """
         try:
-            return self.exchange.fetch_ticker(symbol)
+            return self._api.fetch_ticker(symbol)
         except Exception as e:
             raise RuntimeError(f"Failed to fetch ticker for {symbol}: {e}")
 
@@ -104,7 +111,7 @@ class Indodax(Exchange):
         :return: Tickers as a dictionary.
         """
         try:
-            return self.exchange.fetch_tickers(pairs)
+            return self._api.fetch_tickers(pairs)
         except Exception as e:
             raise RuntimeError(f"Failed to fetch tickers for {pairs}: {e}")
 
@@ -119,7 +126,7 @@ class Indodax(Exchange):
         """
         if timeframe not in self.timeframes:
             raise ValueError(f"Timeframe {timeframe} is not supported.")
-        return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
+        return self._api.fetch_ohlcv(pair, timeframe, since, limit)
 
     def ohlcv_candle_limit(
         self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
