@@ -27,6 +27,7 @@ class Indodax(Exchange):
     }
 
     def __init__(self, *args, validate=False, **kwargs):
+        super().__init__(*args, **kwargs)  # Ensure the base class is initialized
         self.validate = validate
         self._api = ccxt.indodax(
             {
@@ -50,6 +51,7 @@ class Indodax(Exchange):
             "fetchTrades": True,
             "fetchBalance": True,
         }
+        self._last_markets_refresh = 0  # Initialize the missing attribute
         self._initialize_markets()
 
     def _initialize_markets(self):
@@ -148,30 +150,6 @@ class Indodax(Exchange):
             "1d": 365,  # Example: 365 daily candles (1 year)
         }
         return candle_limits.get(timeframe, 100)
-
-    def market_is_tradable(self, symbol):
-        """
-        Checks if a market is tradable on the Indodax exchange.
-        :param symbol: The trading pair symbol, e.g., 'BTC/IDR'.
-        :return: Boolean indicating if the market is tradable.
-        """
-        try:
-            market = self.markets.get(symbol)
-            if not market:
-                logger.warning(f"Market {symbol} not found.")
-                return False
-
-            # Check if the market has both a 'base' and 'quote' currency
-            if (
-                market.get("active")
-                and market.get("limits", {}).get("amount", {}).get("min", 0) > 0
-            ):
-                return True
-            else:
-                return False
-        except Exception as e:
-            logger.error(f"Error checking if market {symbol} is tradable: {e}")
-            return False
 
     def close(self):
         """
