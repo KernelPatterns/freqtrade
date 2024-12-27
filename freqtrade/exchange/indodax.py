@@ -36,14 +36,7 @@ class Indodax(Exchange):
             }
         )
         self._markets = None
-        self._timeframes = {
-            "1m": "1m",
-            "15m": "15m",
-            "30m": "30m",
-            "1h": "1h",
-            "4h": "4h",
-            "1d": "1d",
-        }
+        self._timeframes = self._api.timeframes  # Dynamically fetch timeframes from ccxt
         self._ccxt_has = {
             "fetchOHLCV": True,
             "fetchTicker": True,
@@ -159,3 +152,37 @@ class Indodax(Exchange):
             self._api.close()
         except Exception as e:
             logger.warning(f"Error closing the API connection: {e}")
+
+
+def main():
+    """
+    Main function to initialize and run the Indodax exchange integration.
+    """
+    exchange_instance = None
+    try:
+        # Initialize the Indodax exchange instance
+        exchange_instance = Indodax(
+            api_key="your_api_key",
+            api_secret="your_api_secret",
+        )
+        # Start your bot or trading logic here
+        logger.info("Starting trading bot with Indodax exchange.")
+        
+        # Example: Fetching tickers
+        tickers = exchange_instance.fetch_tickers()
+        logger.info(f"Fetched tickers: {tickers}")
+
+        # Add your trading logic or strategies here
+        # ...
+
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+    finally:
+        # Ensure resources are released properly
+        if exchange_instance:
+            exchange_instance.close()
+            logger.info("Exchange resources have been released.")
+
+
+if __name__ == "__main__":
+    main()
