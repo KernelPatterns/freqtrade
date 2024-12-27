@@ -526,6 +526,56 @@ jobs:
           ft_client/dist
         retention-days: 10
 
+  release:
+    name: Create Release
+    needs: [ build ] # Runs only after "build" job is successful
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Fetch Tags
+        run: git fetch --tags
+
+      - name: Determine Next Version
+        id: version
+        run: |
+          # Get the latest tag
+          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "Latest tag: $latest_tag"
+
+          # Extract major, minor, and patch versions
+          major=$(echo $latest_tag | cut -d. -f1 | sed 's/v//')
+          minor=$(echo $latest_tag | cut -d. -f2)
+          patch=$(echo $latest_tag | cut -d. -f3)
+
+          # Increment the patch version
+          next_patch=$((patch + 1))
+
+          # Construct the next version
+          next_version="v${major}.${minor}.${next_patch}"
+          echo "Next version: $next_version"
+          echo "next_version=$next_version" >> $GITHUB_ENV
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          previous_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
+          log=$(git log $previous_tag..HEAD --pretty=format:"- %s (%h)")
+          echo "changelog=$log" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.next_version }}
+          release_name: ${{ env.next_version }}
+          body: |
+            ## Changelog
+            ${{ env.changelog }}
+          draft: false
+          prerelease: false
+
   deploy-test-pypi:
     name: "Publish Python 🐍 distribution 📦 to TestPyPI"
     needs: [ build ]
