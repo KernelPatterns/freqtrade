@@ -1,10 +1,13 @@
 """Indodax exchange subclass"""
 
 import logging
+
 import ccxt
+
 from freqtrade.enums import CandleType
 from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +25,12 @@ class Indodax(Exchange):
     def __init__(self, *args, validate=False, **kwargs):
         super().__init__(*args, **kwargs)  # Initialize parent class
         self.validate = validate
-        self.exchange = ccxt.indodax({
-            "apiKey": kwargs.get("api_key"),
-            "secret": kwargs.get("api_secret"),
-        })
+        self.exchange = ccxt.indodax(
+            {
+                "apiKey": kwargs.get("api_key"),
+                "secret": kwargs.get("api_secret"),
+            }
+        )
 
         self._markets = None  # Initialize _markets as None
         self._timeframes = {
@@ -60,7 +65,7 @@ class Indodax(Exchange):
         """
         try:
             markets = self.exchange.fetch_markets()
-            return {market['symbol']: market for market in markets}
+            return {market["symbol"]: market for market in markets}
         except Exception as e:
             raise RuntimeError(f"Failed to fetch markets: {e}")
 
@@ -81,7 +86,9 @@ class Indodax(Exchange):
             raise ValueError(f"Timeframe {timeframe} is not supported.")
         return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
-    def ohlcv_candle_limit(self, timeframe: str, candle_type: CandleType, since_ms: int | None = None) -> int:
+    def ohlcv_candle_limit(
+        self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
+    ) -> int:
         candle_limits = {
             "1m": 1440,
             "15m": 96,
