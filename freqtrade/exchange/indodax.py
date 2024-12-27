@@ -6,8 +6,8 @@ import ccxt
 
 from freqtrade.enums import CandleType
 from freqtrade.exchange import Exchange
-from freqtrade.exchange.exchange
-import TradingMode
+from freqtrade.exchange.exchange import TradingMode
+
 
 class Indodax(Exchange):
     """
