@@ -1,16 +1,12 @@
 """Indodax exchange subclass"""
 
 import logging
-
 import ccxt
-
 from freqtrade.enums import CandleType
 from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
 
-
 logger = logging.getLogger(__name__)
-
 
 class Indodax(Exchange):
     """
@@ -18,8 +14,8 @@ class Indodax(Exchange):
     with this exchange.
 
     Please note that this exchange is not included in the list of exchanges
-    officially supported by the Freqtrade development team. Some features
-    may not work as expected.
+    officially supported by the Freqtrade development team. So some features
+    may still not work as expected.
     """
 
     _ft_has: FtHas = {
@@ -27,8 +23,6 @@ class Indodax(Exchange):
     }
 
     def __init__(self, *args, validate=False, **kwargs):
-        super().__init__(*args, validate=validate, **kwargs)
-
         self.validate = validate
         self.exchange = ccxt.indodax(
             {
@@ -36,7 +30,7 @@ class Indodax(Exchange):
                 "secret": kwargs.get("api_secret"),
             }
         )
-        self._markets = None  # Cache for market data
+        self._markets = None  # Initialize the _markets attribute
         self._timeframes = {
             "1m": "1m",
             "15m": "15m",
@@ -51,52 +45,70 @@ class Indodax(Exchange):
             "fetchTickers": True,
             "fetchTrades": True,
             "fetchBalance": True,
-            "fetchMarkets": True,
         }
+        self._initialize_markets()
 
-    @property
-    def timeframes(self):
-        """Return the available timeframes for this exchange."""
-        return self._timeframes
+    def _initialize_markets(self):
+        """
+        Initializes the markets data by fetching from the Indodax API.
+        """
+        try:
+            self._markets = self.get_markets_from_api()
+            logger.info(f"Markets initialized: {list(self._markets.keys())}")
+        except Exception as e:
+            logger.error(f"Failed to initialize markets: {e}")
+            raise RuntimeError(f"Failed to initialize markets: {e}")
+
+    def get_markets_from_api(self):
+        """
+        Fetches market data from the Indodax API and processes it into the required format.
+        :return: A dictionary of markets data.
+        """
+        try:
+            response = self.exchange.load_markets()
+            return {market: details for market, details in response.items()}
+        except Exception as e:
+            logger.error(f"Error fetching markets from API: {e}")
+            raise RuntimeError(f"Error fetching markets from API: {e}")
 
     @property
     def markets(self):
         """
-        Return the markets available on the exchange.
-        Fetches and caches markets if not already cached.
+        Returns the markets data, initializing it if necessary.
+        :return: A dictionary of markets data.
         """
         if not self._markets:
-            try:
-                self._markets = {
-                    market["symbol"]: market for market in self.exchange.fetch_markets()
-                }
-            except Exception as exc:
-                raise RuntimeError(f"Failed to fetch markets: {exc}") from exc
+            logger.debug("Markets not initialized. Fetching from API.")
+            self._initialize_markets()
         return self._markets
 
+    @property
+    def timeframes(self):
+        """
+        Returns the available timeframes for this exchange.
+        """
+        return self._timeframes
+
     def fetch_ticker(self, symbol):
-        """Fetch ticker data for a symbol."""
         try:
             return self.exchange.fetch_ticker(symbol)
-        except Exception as exc:
-            raise RuntimeError(f"Failed to fetch ticker for {symbol}: {exc}") from exc
+        except Exception as e:
+            raise RuntimeError(f"Failed to fetch ticker for {symbol}: {e}")
 
     def fetch_tickers(self, pairs=None):
         """
         Fetch all tickers from the exchange.
-
         :param pairs: Optional list of pairs to fetch tickers for.
         :return: Tickers as a dictionary.
         """
         try:
             return self.exchange.fetch_tickers(pairs)
-        except Exception as exc:
-            raise RuntimeError(f"Failed to fetch tickers for {pairs}: {exc}") from exc
+        except Exception as e:
+            raise RuntimeError(f"Failed to fetch tickers for {pairs}: {e}")
 
     def fetch_ohlcv(self, pair, timeframe, since=None, limit=None):
         """
         Fetch OHLCV data for a trading pair.
-
         :param pair: The pair to fetch OHLCV for.
         :param timeframe: The timeframe to fetch.
         :param since: Timestamp in ms to fetch data from.
@@ -105,16 +117,13 @@ class Indodax(Exchange):
         """
         if timeframe not in self.timeframes:
             raise ValueError(f"Timeframe {timeframe} is not supported.")
-        try:
-            return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
-        except Exception as e:
-            raise RuntimeError(f"Failed to fetch OHLCV for {pair} with timeframe {timeframe}: {e}")
+        return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
 
     def ohlcv_candle_limit(
         self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
     ) -> int:
         """
-        Return the maximum number of candles that the exchange supports for the given timeframe.
+        Returns the maximum number of candles that the exchange supports for the given timeframe.
 
         :param timeframe: Timeframe in the format '1m', '5m', '1d', etc.
         :param candle_type: The type of candle (specific to freqtrade configuration).
@@ -129,8 +138,10 @@ class Indodax(Exchange):
             "4h": 7,  # Example: 7 4-hour candles (28 hours)
             "1d": 365,  # Example: 365 daily candles (1 year)
         }
-        return candle_limits.get(timeframe, 100)  # Default to 100 if timeframe is not in the dict
+        return candle_limits.get(timeframe, 100)
 
     def close(self):
-        """Clean up resources if necessary."""
+        """
+        Clean up resources if necessary.
+        """
         pass
