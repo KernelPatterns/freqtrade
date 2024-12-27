@@ -155,4 +155,7 @@ class Indodax(Exchange):
         """
         Clean up resources if necessary.
         """
-        pass
+        try:
+            self._api.close()
+        except Exception as e:
+            logger.warning(f"Error closing the API connection: {e}")
