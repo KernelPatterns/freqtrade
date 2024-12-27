@@ -160,9 +160,12 @@ class Indodax(Exchange):
             if not market:
                 logger.warning(f"Market {symbol} not found.")
                 return False
-            
+
             # Check if the market has both a 'base' and 'quote' currency
-            if market.get('active') and market.get('limits', {}).get('amount', {}).get('min', 0) > 0:
+            if (
+                market.get("active")
+                and market.get("limits", {}).get("amount", {}).get("min", 0) > 0
+            ):
                 return True
             else:
                 return False
