@@ -6,11 +6,8 @@ import ccxt
 
 from freqtrade.enums import CandleType
 from freqtrade.exchange import Exchange
-from freqtrade.exchange.exchange_types import FtHas
-
-
-logger = logging.getLogger(__name__)
-
+from freqtrade.exchange.exchange
+import TradingMode
 
 class Indodax(Exchange):
     """
@@ -28,6 +25,7 @@ class Indodax(Exchange):
 
     def __init__(self, *args, validate=False, **kwargs):
         self.validate = validate
+        self.trading_mode = TradingMode.SPOT  # Set trading mode to SPOT
         self._api = ccxt.indodax(
             {
                 "apiKey": kwargs.get("api_key"),
