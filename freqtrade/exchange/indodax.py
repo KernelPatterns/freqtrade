@@ -149,6 +149,27 @@ class Indodax(Exchange):
         }
         return candle_limits.get(timeframe, 100)
 
+    def market_is_tradable(self, symbol):
+        """
+        Checks if a market is tradable on the Indodax exchange.
+        :param symbol: The trading pair symbol, e.g., 'BTC/IDR'.
+        :return: Boolean indicating if the market is tradable.
+        """
+        try:
+            market = self.markets.get(symbol)
+            if not market:
+                logger.warning(f"Market {symbol} not found.")
+                return False
+            
+            # Check if the market has both a 'base' and 'quote' currency
+            if market.get('active') and market.get('limits', {}).get('amount', {}).get('min', 0) > 0:
+                return True
+            else:
+                return False
+        except Exception as e:
+            logger.error(f"Error checking if market {symbol} is tradable: {e}")
+            return False
+
     def close(self):
         """
         Clean up resources if necessary.
