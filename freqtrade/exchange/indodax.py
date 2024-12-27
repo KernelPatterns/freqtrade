@@ -28,7 +28,7 @@ class Indodax(Exchange):
 
     def __init__(self, *args, validate=False, **kwargs):
         self.validate = validate
-        self.exchange = ccxt.indodax(
+        self._api = ccxt.indodax(
             {
                 "apiKey": kwargs.get("api_key"),
                 "secret": kwargs.get("api_secret"),
@@ -69,7 +69,7 @@ class Indodax(Exchange):
         :return: A dictionary of markets data.
         """
         try:
-            response = self.exchange.load_markets()
+            response = self._api.load_markets()
             return {market: details for market, details in response.items()}
         except Exception as e:
             logger.error(f"Error fetching markets from API: {e}")
