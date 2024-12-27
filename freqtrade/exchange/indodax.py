@@ -3,7 +3,6 @@
 import logging
 
 import ccxt
-
 from freqtrade.enums import CandleType
 from freqtrade.exchange import Exchange
 from freqtrade.exchange.exchange_types import FtHas
@@ -35,8 +34,7 @@ class Indodax(Exchange):
                 "secret": kwargs.get("api_secret"),
             }
         )
-
-        self._markets = None  # Initialize _markets as None
+        self._markets = None  # Cache for market data
         self._timeframes = {
             "1m": "1m",
             "15m": "15m",
@@ -70,16 +68,16 @@ class Indodax(Exchange):
                 self._markets = {
                     market["symbol"]: market for market in self.exchange.fetch_markets()
                 }
-            except Exception as e:
-                raise RuntimeError(f"Failed to fetch markets: {e}")
+            except Exception as exc:
+                raise RuntimeError(f"Failed to fetch markets: {exc}") from exc
         return self._markets
 
     def fetch_ticker(self, symbol):
         """Fetch ticker data for a symbol."""
         try:
             return self.exchange.fetch_ticker(symbol)
-        except Exception as e:
-            raise RuntimeError(f"Failed to fetch ticker for {symbol}: {e}")
+        except Exception as exc:
+            raise RuntimeError(f"Failed to fetch ticker for {symbol}: {exc}") from exc
 
     def fetch_tickers(self, pairs=None):
         """
@@ -90,8 +88,8 @@ class Indodax(Exchange):
         """
         try:
             return self.exchange.fetch_tickers(pairs)
-        except Exception as e:
-            raise RuntimeError(f"Failed to fetch tickers for {pairs}: {e}")
+        except Exception as exc:
+            raise RuntimeError(f"Failed to fetch tickers for {pairs}: {exc}") from exc
 
     def fetch_ohlcv(self, pair, timeframe, since=None, limit=None):
         """
@@ -108,9 +106,7 @@ class Indodax(Exchange):
         try:
             return self.exchange.fetch_ohlcv(pair, timeframe, since, limit)
         except Exception as e:
-            raise RuntimeError(
-                f"Failed to fetch OHLCV for {pair} with timeframe {timeframe}: {e}"
-            )
+            raise RuntimeError(f"Failed to fetch OHLCV for {pair} with timeframe {timeframe}: {e}")
 
     def ohlcv_candle_limit(
         self, timeframe: str, candle_type: CandleType, since_ms: int | None = None
