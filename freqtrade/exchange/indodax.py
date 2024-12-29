@@ -12,7 +12,7 @@ from freqtrade.exchange.exchange_types import FtHas
 logger = logging.getLogger(__name__)
 
 
-class INDODAX(Exchange):
+class Indodax(Exchange):
     """
     Indodax exchange class. Contains adjustments needed for Freqtrade to work
     with this exchange.
