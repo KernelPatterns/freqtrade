@@ -49,19 +49,14 @@ jobs:
         mv -f $WHEEL_PATH dist/$WHEEL_FILE
 
         # Create release
-        API_URL="https://api.github.com/repos/owner/repo/releases"
-        RELEASE_ID=$(curl -s -X POST \
-          -H "Authorization: token $GITHUB_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{"tag_name": "v1.0.0", "name": "v1.0.0", "body": "Release notes"}' \
-          $API_URL | jq -r '.id')
+        RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/${{ env.RELEASE_TAG }}" | jq -r '.id')
         
-        UPLOAD_URL="https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$WHEEL_FILE"
         curl -s -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Content-Type: application/octet-stream" \
           --data-binary @"./dist/$WHEEL_FILE" \
-          $UPLOAD_URL
+          "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$WHEEL_FILE"
 
     - name: Trigger Workflow on Target Repository
       run: |
