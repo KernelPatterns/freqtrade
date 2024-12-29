@@ -725,7 +725,6 @@ class Exchange:
     def validate_timeframes(self, timeframe: str | None) -> None:
         """
         Check if timeframe from config is a supported timeframe on the exchange
-        """
         print("exchange.py 729: self._api is", self._api)
         if not hasattr(self._api, "timeframes") or self._api.timeframes is None:
             # If timeframes attribute is missing (or is None), the exchange probably
@@ -736,7 +735,7 @@ class Exchange:
                 f"for the exchange {self.name} and this exchange "
                 f"is therefore not supported. ccxt fetchOHLCV: {self.exchange_has('fetchOHLCV')}"
             )
-
+        """
         if timeframe and (timeframe not in self.timeframes):
             raise ConfigurationError(
                 f"Invalid timeframe '{timeframe}'. This exchange supports: {self.timeframes}"
