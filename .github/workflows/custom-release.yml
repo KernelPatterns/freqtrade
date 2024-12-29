@@ -63,7 +63,7 @@ jobs:
         git config --global user.name "$GITHUB_ACTOR"
         git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-        REMOTE_REPO="https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/KernelPatterns/algorithms.git"
+        REMOTE_REPO="https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/ZeroWeak/algorithms.git"
         git clone --single-branch --branch gh-pages $REMOTE_REPO gh-pages && cd gh-pages
         git add . && git commit --allow-empty -m "Custom freqtrade release ${{ env.tag_name }}" && git push
   
