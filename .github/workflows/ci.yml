@@ -561,7 +561,7 @@ jobs:
           tag_name: ${{ env.next_version }}
           release_name: ${{ env.next_version }}
           body: |
-            Full changelog [${{ env.latest_tag}}...${{ env.next_version }}](https://github.com/KernelPatterns/freqtrade/compare/${{ env.latest_tag}}...${{ env.next_version }})
+            **Full Changelog**: https://github.com/KernelPatterns/freqtrade/compare/${{ env.latest_tag}}...${{ env.next_version }}
           draft: false
           prerelease: false
 
