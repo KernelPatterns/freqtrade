@@ -28,6 +28,6 @@ class Indodax(Exchange):
         :return: Ticker data.
         """
         try:
-            return self._api.fetch_ticker(symbol)
+            return self.exchange.fetch_ticker(symbol)
         except Exception as e:
             raise RuntimeError(f"Failed to fetch ticker for {symbol}: {e}")
