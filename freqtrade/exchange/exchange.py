@@ -736,6 +736,7 @@ class Exchange:
                 f"is therefore not supported. ccxt fetchOHLCV: {self.exchange_has('fetchOHLCV')}"
             )
         """
+        print("exchange.py 739: self is", self)
         if timeframe and (timeframe not in self.timeframes):
             raise ConfigurationError(
                 f"Invalid timeframe '{timeframe}'. This exchange supports: {self.timeframes}"
