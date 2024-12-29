@@ -51,7 +51,7 @@ jobs:
         # Create release
         RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
           "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/${{ env.RELEASE_TAG }}" | jq -r '.id')
-        
+
         curl -s -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Content-Type: application/octet-stream" \
