@@ -39,6 +39,7 @@ class ExchangeResolver(IResolver):
         # Map exchange name to avoid duplicate classes for identical exchanges
         exchange_name = MAP_EXCHANGE_CHILDCLASS.get(exchange_name, exchange_name)
         exchange_name = exchange_name.title()
+        print("exchange_resolver.py 42: exchange_name is", exchange_name)
         exchange = None
         try:
             exchange = ExchangeResolver._load_exchange(
