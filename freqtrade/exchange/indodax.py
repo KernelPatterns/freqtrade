@@ -46,6 +46,7 @@ class Indodax(Exchange):
         }
         self._last_markets_refresh = 0  # Initialize the missing attribute
         self._initialize_markets()
+        print("indodax.py 49: self._timeframes is", self._timeframes)
 
     def _initialize_markets(self):
         """
