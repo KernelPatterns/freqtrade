@@ -7,7 +7,6 @@ import asyncio
 import inspect
 import logging
 import signal
-import pprint
 from collections.abc import Coroutine, Generator
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
@@ -726,9 +725,9 @@ class Exchange:
     def validate_timeframes(self, timeframe: str | None) -> None:
         """
         Check if timeframe from config is a supported timeframe on the exchange
-        """
         self._api.timeframes = self._api.options['timeframes']
-        print("exchange.py 729: self._api.timeframes is", self._api.timeframes)
+        """
+        print("exchange.py 730: self._api.timeframes is", self._api.timeframes)
         if not hasattr(self._api, "timeframes") or self._api.timeframes is None:
             # If timeframes attribute is missing (or is None), the exchange probably
             # has no fetchOHLCV method.
