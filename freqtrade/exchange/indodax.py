@@ -18,6 +18,3 @@ class Indodax(Exchange):
     _ft_has: FtHas = {
         "ohlcv_candle_limit": 1000,
     }
-
-    def __init__(self, *args, validate=False, **kwargs):
-        self._api.timeframes = self._api.options['timeframes']  # Dynamically fetch timeframes from ccxt
