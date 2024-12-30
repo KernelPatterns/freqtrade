@@ -726,7 +726,8 @@ class Exchange:
         """
         Check if timeframe from config is a supported timeframe on the exchange
         """
-        print("exchange.py 729: self is", self.__dict__)
+        print("exchange.py 729: self is")
+        pprint(self)
         if not hasattr(self._api, "timeframes") or self._api.timeframes is None:
             # If timeframes attribute is missing (or is None), the exchange probably
             # has no fetchOHLCV method.
