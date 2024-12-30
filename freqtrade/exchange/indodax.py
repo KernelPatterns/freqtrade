@@ -18,3 +18,5 @@ class Indodax(Exchange):
     _ft_has: FtHas = {
         "ohlcv_candle_limit": 1000,
     }
+
+    timeframes = self._api.options['timeframes']
