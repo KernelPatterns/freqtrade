@@ -6,12 +6,6 @@ on:
       - stable
       - develop
       - ci/*
-    tags:
-  release:
-    types: [published]
-  pull_request:
-  schedule:
-    - cron:  '0 3 * * 4'
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}"
@@ -297,7 +291,7 @@ jobs:
 
     - name: Tests
       run: |
-        pytest --random-order --durations 20 -n auto
+        pytest --random-order
 
     - name: Check for repository changes
       run: |
@@ -526,11 +520,56 @@ jobs:
           ft_client/dist
         retention-days: 10
 
+  release:
+    name: Create Release
+    needs: [ build ] # Runs only after "build" job is successful
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Fetch Tags
+        run: git fetch --tags
+
+      - name: Determine Next Version
+        id: version
+        run: |
+          # Get the latest tag
+          latest_tag=$(git tag --sort=-v:refname | head -n 1)
+          echo "Latest tag: $latest_tag"
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
+          # Extract major, minor, and patch versions
+          major=$(echo $latest_tag | cut -d. -f1 | sed 's/v//')
+          minor=$(echo $latest_tag | cut -d. -f2)
+          patch=$(echo $latest_tag | cut -d. -f3)
+
+          # Increment the patch version
+          next_patch=$((patch + 1))
+
+          # Construct the next version
+          next_version="v${major}.${minor}.${next_patch}"
+          echo "Next version: $next_version"
+          echo "next_version=$next_version" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          tag_name: ${{ env.next_version }}
+          release_name: ${{ env.next_version }}
+          body: |
+            **Full Changelog**: https://github.com/KernelPatterns/freqtrade/compare/${{ env.latest_tag}}...${{ env.next_version }}
+          draft: false
+          prerelease: false
+
   deploy-test-pypi:
     name: "Publish Python 🐍 distribution 📦 to TestPyPI"
     needs: [ build ]
     runs-on: ubuntu-22.04
-    if: (github.event_name == 'release')
+    if: (github.event_name == 'release' && github.repository == 'freqtrade/freqtrade')
     environment:
       name: testpypi
       url: https://test.pypi.org/p/freqtrade
@@ -557,7 +596,7 @@ jobs:
     name: "Publish Python 🐍 distribution 📦 to PyPI"
     needs: [ build ]
     runs-on: ubuntu-22.04
-    if: (github.event_name == 'release')
+    if: (github.event_name == 'release' && github.repository == 'freqtrade/freqtrade')
     environment:
       name: pypi
       url: https://pypi.org/p/freqtrade
