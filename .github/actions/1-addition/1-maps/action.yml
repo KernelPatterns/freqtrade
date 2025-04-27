@@ -151,7 +151,7 @@ runs:
         DOCKER_HUB_PASSWORD: ${{ inputs.hub_password }}
         GCP_CREDENTIALS: ${{ inputs.credentials }}
       run: |
-        ./.github/entrypoint/sync.sh ${{ github.repository }} ${{ env.TARGET_REPOSITORY }} ${{ env.GH_TOKEN }}
+        ./.github/entrypoint/sync.sh ${{ github.repository }} ${{ env.TARGET_REPOSITORY }}
   
         #python -m pip -q install --upgrade pip
         #python -m pip -q install -r ${{ inputs.action_path }}/dataFile/requirements.txt
