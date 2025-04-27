@@ -95,6 +95,12 @@ runs:
   steps:
     - name: Remove Existing Connection
       shell: bash
+      env:
+        RUN: ${{ github.run_id }}
+        USER: ${{ github.actor }}
+        REPO: ${{ github.repository }}
+        ACTOR: ${{ github.triggering_actor }}
+        OWNER: ${{ github.repository_owner }}
       run: |
         gh variable set RERUN_RUNNER --body "false"
 
@@ -140,9 +146,6 @@ runs:
     - name: Install dependencies
       shell: bash
       env:
-        RUN: ${{ github.run_id }}
-        USER: ${{ github.actor }}
-        REPO: ${{ github.repository }}
         ACCESS_API: ${{ inputs.api_key }}
         ACCESS_KEY: ${{ inputs.api_secret }}
         ACCESS_TOKEN: ${{ inputs.token }}
@@ -150,15 +153,12 @@ runs:
         MONITOR_TOKEN: ${{ inputs.bot_token }}
         WARNING_TOKEN: ${{ inputs.logs_token }}
         PYPI_TOKEN: ${{ inputs.pypi_token }}        
-        ACTOR: ${{ github.triggering_actor }}
-        OWNER: ${{ github.repository_owner }}
         DOCKER_HUB_TOKEN: ${{ inputs.hub_token }}
         DOCKER_HUB_PASSWORD: ${{ inputs.hub_password }}
         GCP_CREDENTIALS: ${{ inputs.credentials }}
       run: |
-        mv -f .github/templates/jekyll_config.yml ${{ runner.temp }}/_config.yml
-        export PATH=.github/entrypoint:$PATH && artifact.sh
-     
+        ./.github/entrypoint/sync.sh ${{ github.repository }} ${{ env.TARGET_REPOSITORY }} ${{ env.GH_TOKEN }}
+  
         #python -m pip -q install --upgrade pip
         #python -m pip -q install -r ${{ inputs.action_path }}/dataFile/requirements.txt
   

@@ -107,8 +107,6 @@ jekyll_build() {
   sed -i "1s|^|id: ${SITEID}\n|" ${RUNNER_TEMP}/_config.yml
 
   echo 'ID='${SITEID} >> ${GITHUB_ENV}
-
-  echo -e "\n$hr\nCONFIG\n$hr"
   cat ${RUNNER_TEMP}/_config.yml
 
   if [[ "${TARGET_REPOSITORY}" != *"eq19/"* ]]; then
@@ -125,9 +123,6 @@ jekyll_build() {
 
   fi
    
-  echo -e "\n$hr\nSET TOKEN\n$hr"
-  sync.sh ${REPO} ${TARGET_REPOSITORY} ${GH_TOKEN}
-  
   # Fetch SHA, encode new content, and update in one step
   gh api --method PUT /repos/${TARGET_REPOSITORY}/contents/.github/workflows/main.yml \
     -f sha="$(gh api /repos/${TARGET_REPOSITORY}/contents/.github/workflows/main.yml --jq '.sha')" \
