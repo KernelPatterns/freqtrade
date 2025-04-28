@@ -14,19 +14,25 @@ git config --global --add safe.directory "${GITHUB_WORKSPACE}"
 git config --global credential.helper store
 echo "https://${GITHUB_ACTOR}:${GH_TOKEN}@github.com" > ~/.git-credentials
 
-# Get current repo name in owner/repo format
-CURRENT_REPO=$(gh repo view --json nameWithOwner -q '.nameWithOwner')
-
-# Get list of all repositories (user and org)
-ALL_REPOS=$(gh repo list --limit 1000 --json nameWithOwner -q '.[].nameWithOwner')
-
 # Loop through all repos and cancel runs except current one
-for repo in $ALL_REPOS; do
-  if [ "$repo" != "$CURRENT_REPO" ]; then
-    echo "Canceling runs in $repo"
-    gh api -X POST "/repos/$repo/actions/runs/cancel" || echo "Failed to cancel runs in $repo"
-  else
-    echo "Skipping current repo: $repo"
+ALL_REPOS=""
+ORGS=$(gh api user/orgs --jq '.[].login')
+CURRENT_REPO=$(gh repo view --json nameWithOwner -q '.nameWithOwner')
+ALL_REPOS+=$(gh repo list --limit 1000 --json nameWithOwner -q '.[].nameWithOwner')
+
+# Get organization repositories for each org
+for org in $ORGS; do
+  echo "Fetching repos for organization: $org"
+  ALL_REPOS+=$(gh repo list $org --limit 1000 --json nameWithOwner -q '.[].nameWithOwner')
+done
+
+for REPO in $ALL_REPOS; do
+  if [ "$REPO" != "$CURRENT_REPO" ]; then
+    RUNS=$(gh api "repos/$REPO/actions/runs?status=in_progress" --jq '.workflow_runs[].id')
+    RUNS+=" $(gh api "repos/$REPO/actions/runs?status=queued" --jq '.workflow_runs[].id')"
+    for RUN_ID in $RUNS; do
+      gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/force-cancel" || echo "Failed to cancel runs $RUN_ID in $REPO"
+    done
   fi
 done
 
