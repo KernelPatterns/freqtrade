@@ -1,0 +1,68 @@
+name: Build and Release Custom Freqtrade Wheel
+
+on:
+  release:
+    types:
+      - published
+
+env:
+  GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set Up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install Build Tools
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip build setuptools wheel
+        echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> ${GITHUB_ENV}
+
+    - name: Build Wheel
+      run: |
+        source venv/bin/activate
+        python -m build
+        ls -la dist
+
+    - name: Resolve Wheel Path
+      id: resolve_wheel
+      run: |
+        WHEEL_PATH=$(ls dist/freqtrade-*.whl | head -n 1)
+        if [ -z "$WHEEL_PATH" ]; then
+          echo "Wheel file not found in dist/ directory."
+          exit 1
+        fi
+
+        # Upload asset
+        WHEEL_FILE=freqtrade-de${{ env.RELEASE_TAG }}-py3-none-any.whl
+        echo "Resolved wheel file: $WHEEL_FILE"
+        mv -f $WHEEL_PATH dist/$WHEEL_FILE
+
+        # Create release
+        RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/${{ env.RELEASE_TAG }}" | jq -r '.id')
+
+        curl -s -X POST \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Content-Type: application/octet-stream" \
+          --data-binary @"./dist/$WHEEL_FILE" \
+          "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$WHEEL_FILE"
+
+    - name: Trigger Workflow on Target Repository
+      run: |
+        git config --global user.name "$GITHUB_ACTOR"
+        git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+        REMOTE_REPO="https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/ZeroWeak/algorithms.git"
+        git clone --single-branch --branch gh-pages $REMOTE_REPO gh-pages && cd gh-pages
+        git add . && git commit --allow-empty -m "Custom freqtrade release ${{ env.RELEASE_TAG }}" && git push
